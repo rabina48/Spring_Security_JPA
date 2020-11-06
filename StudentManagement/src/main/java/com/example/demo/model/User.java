@@ -1,21 +1,36 @@
 package com.example.demo.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "users",schema = "public")
+@Table(name = "users", schema = "public")
 public class User {
     private Integer id;
     private String fullName;
     private String address;
     private String department;
-    private String position;
     private String email;
+    private String position;
     private String password;
+    private List<Role> roles;
 
+    @JoinTable(name = "user_role",
+                      joinColumns = @JoinColumn(name = "user_id"),
+                      inverseJoinColumns = @JoinColumn(name = "role_id"))
+
+    @ManyToMany
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
 
     public Integer getId() {
         return id;
@@ -72,4 +87,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+
 }

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RegisterServices {
 
@@ -16,23 +18,32 @@ public class RegisterServices {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Response addData(User user) {
-        Object data = userRepo.save(user);
+    public Response<User> addData(User user) {
+        User user1 = userRepo.findByEmail(user.getEmail());
 
         if (user.getEmail() == null) {
             return new Response(false, "Email cannot be null!");
         }
 
-        User user1 = userRepo.findByEmail(user.getEmail());
-        if (user.getEmail().equals(user1)) {
-
-            return new Response(true, "Already exist!");
-        } else{
-            String  password = user.getPassword();
-            String encodedPassword =passwordEncoder.encode(password);
+        else if (user1 == null) {
+            String password = user.getPassword();
+            String encodedPassword = passwordEncoder.encode(password);
             user.setPassword(encodedPassword);
-            return new Response(true, "  You are Registered!", data);
+            return new Response(true, "Added Success!", userRepo.save(user));
+
+
+        } else {
+
+            return new Response(true, "Already exist email!!");
+
         }
 
     }
+
+
+    public Response<List<User>> getAllData() {
+        return new Response<>(true,"sucess!", userRepo.findAll());
+    }
+
+
 }
